@@ -1,0 +1,123 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "threatlens-ai"
+version = "0.2.0"
+description = "Threat intelligence aggregation and correlation engine for AI/MCP security"
+authors = [{ name = "Carlos-Projects", email = "Carlos@AIAgentObservatory.org" }]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = [
+    "mcp", "a2a", "security", "threat-intelligence", "correlation",
+    "prompt-injection", "llm-security", "agent-security", "mitre-atlas",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+]
+
+dependencies = [
+    "fastapi~=0.136.0,!=0.136.3",
+    "uvicorn[standard]~=0.48.0",
+    "httpx~=0.28.1",
+    "typer~=0.26.1",
+    "rich~=15.0.0",
+    "pydantic~=2.13.4",
+    "jinja2~=3.1.6",
+    "apscheduler~=3.11.0",
+    "mcp-taxonomy>=0.1,<0.3",
+    "cryptography~=48.0.0",
+    "python-multipart~=0.0.29",
+    "pyyaml~=6.0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.8",
+]
+web = [
+    "python-multipart>=0.0.9",
+    "aiofiles>=23.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Carlos-Projects/threatlens"
+Repository = "https://github.com/Carlos-Projects/threatlens"
+Documentation = "https://carlos-projects.github.io/threatlens/"
+
+[project.scripts]
+threatlens = "threatlens.cli:app"
+
+[tool.hatch.envs.default]
+dependencies = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.8",
+]
+
+[tool.hatch.envs.default.scripts]
+lint = "ruff check src/ tests/"
+lint-fix = "ruff check --fix src/ tests/"
+test = "python -m pytest tests/ -v"
+test-cov = "python -m pytest tests/ --cov=threatlens --cov-report=term"
+typecheck = "mypy src/"
+check = ["lint", "typecheck", "test"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/threatlens"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/examples"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["UP006", "N818", "N801", "D", "F841", "SIM115", "B007", "UP017", "E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true
+show_error_codes = true
+warn_unused_ignores = true
+exclude = ["tests/"]
+files = ["src/threatlens"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+source = ["threatlens"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
